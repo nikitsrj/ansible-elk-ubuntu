@@ -1,7 +1,7 @@
 ---
 
 - name: Download and install the Public Signing Key
-  copy: curl https://packagecloud.io/gpg.key | sudo apt-key add -
+  command: curl https://packagecloud.io/gpg.key | sudo apt-key add -
 
 - name: Save the repository definition to /etc/apt/sources.list.d/grafana.list
   command: echo "deb https://packagecloud.io/grafana/stable/debian/ jessie main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
