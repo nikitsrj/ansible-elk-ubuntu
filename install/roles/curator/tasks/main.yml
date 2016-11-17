@@ -4,23 +4,17 @@
 # install curator tool for managing elasticsearch
 #
 
-- name: Copy curator yum repo file
-  copy:
-    src=curator.repo
-    dest=/etc/yum.repos.d/curator.repo
-    owner=root
-    group=root
-    mode=0644
-  become: true
+- name: Down and install the Public Signing key
+  command: wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+  when: install_curator_tool
+- name: Save the repository definition to /etc/apt/sources.list.d/curator.list
+  command: echo "deb http://packages.elastic.co/curator/4/debian stable main" | sudo tee -a /etc/apt/sources.list.d/curator.list
   when: install_curator_tool
 
-- name: Import curator GPG Key
-  rpm_key: key=http://packages.elastic.co/GPG-KEY-elasticsearch
-    state=present
-  when: install_curator_tool
+- apt: update_cache=yes
 
 - name: Install curator and python-setuptools
-  yum: name={{ item }} state=present
+  apt: name={{ item }} state=present
   become: true
   with_items:
     - python-elasticsearch-curator

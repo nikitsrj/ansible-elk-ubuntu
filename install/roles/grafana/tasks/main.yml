@@ -1,14 +1,19 @@
 ---
 
-- name: Copying Grafana repo to systems
-  copy: src="{{ playbook_dir }}/grafana.repo" dest=/etc/yum.repos.d/ force=no
+- name: Download and install the Public Signing Key
+  copy: curl https://packagecloud.io/gpg.key | sudo apt-key add -
+
+- name: Save the repository definition to /etc/apt/sources.list.d/grafana.list
+  command: echo "deb https://packagecloud.io/grafana/stable/debian/ jessie main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+
+- apt: update_cache=yes
 
 - name: Installing Grafana
-  yum: name=grafana state=latest
+  apt: name=grafana state=latest
 
 - name: Enbale Grafana during boot
-  shell: systemctl enable grafana
+  shell: update-rc.d grafana-server defaults
 
 - name: Start the grafana service
-  shell: systemctl start grafana
+  shell: service grafana start
 
